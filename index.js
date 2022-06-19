@@ -7,20 +7,36 @@ server.use(cors());
 server.use(express.json());
 
 const users = [];
-const tweteroo = [];
+const tweets = [];
 
 server.post("/sign-up", (req, res) => {
   const user = req.body;
   users.push(user);
+  console.log(users);
+  res.send("ok");
+});
+
+server.post("/tweets", (req, res) => {
+  const tweet = req.body;
+  tweets.push(tweet);
+  console.log(tweets);
   res.send("ok");
 });
 
 server.get("/tweets", (req, res) => {
-  res.send("Oi");
-});
+  const merged = [];
+  for (let i = 0; i < tweets.length; i++) {
+    merged.push({
+      ...tweets[i],
+      ...users.find((user) => user.username === tweets[i].username),
+    });
 
-server.post("/tweets", (req, res) => {
-  res.send("Oi");
+    if (merged.length > 10) {
+      merged.splice(0, 1);
+    }
+  }
+
+  res.send(merged);
 });
 
 server.listen(5000);
